@@ -2,9 +2,9 @@
 
   <group ns="filters">
     <node pkg="pcl2rviz_display" name="pcl2rviz_display" type="pcl2rviz_display_node"/>
-    <node pkg="pcl_passthrough_filter" name="pcl_passthroughx_filter" type="pcl_passthrough_filterx_node"/>
-    <node pkg="pcl_passthrough_filter" name="pcl_passthroughy_filter" type="pcl_passthrough_filtery_node"/>
-    <node pkg="pcl_passthrough_filter" name="pcl_passthroughz_filter" type="pcl_passthrough_filterz_node"/>
+    <node pkg="pcl_passthrough_filter" name="pcl_passthroughx_filter" type="pcl_passthrough_filter_node"/>
+    <!-- <node pkg="pcl_passthrough_filter" name="pcl_passthroughy_filter" type="pcl_passthrough_filtery_node"/>
+    <node pkg="pcl_passthrough_filter" name="pcl_passthroughz_filter" type="pcl_passthrough_filterz_node"/> -->
   </group>
 
 </launch>
