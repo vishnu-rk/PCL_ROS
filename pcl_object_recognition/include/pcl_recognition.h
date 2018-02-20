@@ -57,15 +57,7 @@ class PclUtils
 public:
     PclUtils(ros::NodeHandle* nodehandle); //constructor
 
-     // insert doxygen documentation of member fncs;  run "doxywizard" to create documentation
-
-     // this fnc is a copy of plane-fitter from exmaple_ros_library
-     /**provide an array of 3-D points (in columns), and this function will use and eigen-vector approach to find the best-fit plane
-     * It returns the plane's normal vector and the plane's (signed) distance from the origin.
-     * @param points_array input: points_array is a matrix of 3-D points to be plane-fitted; coordinates are in columns
-     * @param plane_normal output: this function will compute components of the plane normal here
-     * @param plane_dist output: scalar (signed) distance of the plane from the origin
-     */
+     
     void fit_points_to_plane(Eigen::MatrixXf points_array, 
         Eigen::Vector3f &plane_normal, 
         double &plane_dist); 
@@ -74,27 +66,11 @@ public:
     
     void fit_points_to_plane(pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud_ptr,Eigen::Vector3f &plane_normal, double &plane_dist);
 
-// 
-// 
-// 
-    /**a utility fnc to convert tf::Transform type into an Eigen::Affine3f
-     * Affine type "f" is needed for use with point clouds, since "floats" not "doubles" are more practical, considering
-     * the expected (limited) resolution of the sensor, as well as the large size of point clouds
-     * @param t  [in] provide a transform, e.g. per:
-     *     g_tfListenerPtr->lookupTransform("torso", "kinect_pc_frame", ros::Time(0), tf_sensor_frame_to_torso_frame);
-     * @return an Eigen Affine object, A, such that point_in_new_frame = A*point_in_original_frame
-     */    
+   
     Eigen::Affine3f transformTFToEigen(const tf::Transform &t);
     
-    /** function to create an Eigen-style Affine transform based on construction of a coordinate frame
-     * placed on the surface of a plane
-     */
     Eigen::Affine3f make_affine_from_plane_params(Eigen::Vector3f plane_normal, double plane_dist);
-    /**
-     * returns an Eigen::Affine transform to a coordinate frame constructed on a plane defined by
-     * plane_parameters (normal_x, normal_y, normal_z, distance)
-     * useful for transforming data to find planar surfaces with z-axis vertical
-     */
+    
     Eigen::Affine3f make_affine_from_plane_params(Eigen::Vector4f plane_parameters);
 
 
@@ -198,9 +174,7 @@ private:
     Eigen::Vector3f patch_normal_;
     double patch_dist_;
     vector<int> indices_; // put interesting indices here
-    //prototype for example service
-    //bool serviceCallback(example_srv::simple_bool_service_messageRequest& request, example_srv::simple_bool_service_messageResponse& response);
-
-}; // note: a class definition requires a semicolon at the end of the definition
+    
+}; 
 
 #endif  // this closes the header-include trick...ALWAYS need one of these to match #ifndef
