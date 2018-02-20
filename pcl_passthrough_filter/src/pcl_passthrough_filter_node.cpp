@@ -28,12 +28,12 @@ void cloud_cb (const pcl::PCLPointCloud2ConstPtr& cloud_msg){
 
   pass.setInputCloud(cloudPtrz);
   pass.setFilterFieldName ("y");
-  pass.setFilterLimits (-1, 1);
+  pass.setFilterLimits (-2, 2);
   pass.filter (*cloudy);
 
   pass.setInputCloud(cloudPtry);
   pass.setFilterFieldName ("x");
-  pass.setFilterLimits (-0.1, 0.1);
+  pass.setFilterLimits (-2, 2);
   pass.filter (*cloudx);
   //pcl_conversions::fromPCL(cloud_filteredz, output);
   pub_passthrough.publish (*cloudPtrx);
@@ -46,10 +46,10 @@ void cloud_cb (const pcl::PCLPointCloud2ConstPtr& cloud_msg){
    ros::NodeHandle nh;
  
    // Create a ROS subscriber for the input point cloud
-   ros::Subscriber sub = nh.subscribe ("/kinect2/sd/points/pcl2rviz_display", 1, cloud_cb);
+   ros::Subscriber sub = nh.subscribe ("/kinect2/hd/points/pcl2rviz_display", 1, cloud_cb);
  
    // Create a ROS publisher for the output point cloud
-   pub_passthrough = nh.advertise<sensor_msgs::PointCloud2> ("/kinect2/sd/cloud_filtered", 1);
+   pub_passthrough = nh.advertise<sensor_msgs::PointCloud2> ("/kinect2/hd/cloud_filtered", 1);
  
    // Spin
    ros::spin ();
