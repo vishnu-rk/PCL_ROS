@@ -21,14 +21,14 @@ int main(int argc, char** argv) {
     object_recognizer object(nh);
     geometry_msgs::Pose object_pose;
     ros::Publisher objectRT_publisher;
-    objectRT_publisher= nh.advertise<geometry_msgs::Pose>( "/objectRT_main", 1, true );
+    objectRT_publisher= nh.advertise<geometry_msgs::Pose>( "/objectRT_main", 2, true );
     
     test_model = "bottle.pcd";
    
-    object.set_model_ss(0.01);
-    object.set_scene_ss(0.05);
-    object.set_cg_size(0.01);
-    object.set_cg_thresh(7.0);
+    // object.set_model_ss(0.01);
+    // object.set_scene_ss(0.05);
+    // object.set_cg_size(0.01);
+    // object.set_cg_thresh(7.0);
     object.set_model_cloud(find_in_package(test_model));
 
     if (object.find_best(object_pose)){

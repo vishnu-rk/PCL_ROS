@@ -11,11 +11,12 @@ object_recognizer::object_recognizer( ros::NodeHandle &nodehandle ) : nh_( nodeh
     rotated_model( new pcl::PointCloud<PointType> ) //,pclKinect_ptr_( new pcl::PointCloud<PointType> )
 {
     model_ss_   = 0.01f;
-    scene_ss_   = 0.05f;
+    scene_ss_   = 0.02f;
     rf_rad_     = 0.15f;
     descr_rad_  = 0.02f;
     cg_size_    = 0.01f;
     cg_thresh_  = 7.0f;
+
     have_model  = false;
     have_scene  = false;
 
@@ -26,14 +27,14 @@ object_recognizer::object_recognizer( ros::NodeHandle &nodehandle ) : nh_( nodeh
     initialize_subscribers();
     initialize_publishers(); 
     use_kinect_scene();   
-    timer = nh_.createTimer(ros::Duration(0.2), &object_recognizer::timerCB, this );
+    timer = nh_.createTimer(ros::Duration(10.0), &object_recognizer::timerCB, this );
 
 }
 
 
 void object_recognizer::initialize_subscribers()
 {
-    pointcloud_subscriber_  = nh_.subscribe( "/kinect2/sd/cloud_filtered", 1, &object_recognizer::kinectCB, this );
+    pointcloud_subscriber_  = nh_.subscribe( "/kinect2/hd/cloud_filtered", 1, &object_recognizer::kinectCB, this );
     //real_kinect_subscriber_ = nh_.subscribe( "/camera/depth_registered/points", 1, &object_recognizer::kinectCB, this );
 }
 
@@ -78,7 +79,7 @@ void object_recognizer::use_kinect_scene()
     got_kinect_cloud_ = false;
     while(!got_kinect_cloud_) {
         ros::spinOnce();
-        ros::Duration(0.05).sleep();
+        ros::Duration(2.0).sleep();
     }
     have_scene = true;
     std::cout<<"have kinect cloud"<<std::endl;
@@ -147,6 +148,7 @@ bool object_recognizer::recognize( std::vector<Eigen::Matrix3f> &rotation, std::
         pcl::KdTreeFLANN<DescriptorType> match_search;
         match_search.setInputCloud( model_descriptors );
 
+
         /*  For each scene keypoint descriptor, find nearest neighbor into the model keypoints descriptor cloud and add it to the correspondences vector. */
         for ( size_t i = 0; i < scene_descriptors->size(); ++i )
         {
@@ -157,7 +159,7 @@ bool object_recognizer::recognize( std::vector<Eigen::Matrix3f> &rotation, std::
                 continue;
             }
             int found_neighs = match_search.nearestKSearch( scene_descriptors->at( i ), 1, neigh_indices, neigh_sqr_dists );
-            if ( found_neighs == 1 && neigh_sqr_dists[0] < 0.25f )                  /*  add match only if the squared descriptor distance is less than 0.25 (SHOT descriptor distances are between 0 and 1 by design) */
+            if ( found_neighs == 1 && neigh_sqr_dists[0] < 0.5f )                  /*  add match only if the squared descriptor distance is less than 0.25 (SHOT descriptor distances are between 0 and 1 by design) */
             {
                 pcl::Correspondence corr( neigh_indices[0], static_cast<int> (i), neigh_sqr_dists[0] );
                 model_scene_corrs->push_back( corr );
@@ -178,34 +180,43 @@ bool object_recognizer::recognize( std::vector<Eigen::Matrix3f> &rotation, std::
          *  Compute (Keypoints) Reference Frames only for Hough
          *
          */
-        pcl::PointCloud<RFType>::Ptr    model_rf( new pcl::PointCloud<RFType> () );
-        pcl::PointCloud<RFType>::Ptr    scene_rf( new pcl::PointCloud<RFType> () );
+        // pcl::PointCloud<RFType>::Ptr    model_rf( new pcl::PointCloud<RFType> () );
+        // pcl::PointCloud<RFType>::Ptr    scene_rf( new pcl::PointCloud<RFType> () );
 
-        pcl::BOARDLocalReferenceFrameEstimation<PointType, NormalType, RFType> rf_est;
-        rf_est.setFindHoles( true );
-        rf_est.setRadiusSearch( rf_rad_ );
+        // pcl::BOARDLocalReferenceFrameEstimation<PointType, NormalType, RFType> rf_est;
+        // rf_est.setFindHoles( true );
+        // rf_est.setRadiusSearch( rf_rad_ );
 
-        rf_est.setInputCloud( model_keypoints );
-        rf_est.setInputNormals( model_normals );
-        rf_est.setSearchSurface( model );
-        rf_est.compute( *model_rf );
+        // rf_est.setInputCloud( model_keypoints );
+        // rf_est.setInputNormals( model_normals );
+        // rf_est.setSearchSurface( model );
+        // rf_est.compute( *model_rf );
 
-        rf_est.setInputCloud( scene_keypoints );
-        rf_est.setInputNormals( scene_normals );
-        rf_est.setSearchSurface( scene );
-        rf_est.compute( *scene_rf );
+        // rf_est.setInputCloud( scene_keypoints );
+        // rf_est.setInputNormals( scene_normals );
+        // rf_est.setSearchSurface( scene );
+        // rf_est.compute( *scene_rf );
 
         /*  Clustering */
-        pcl::Hough3DGrouping<PointType, PointType, RFType, RFType> clusterer;
-        clusterer.setHoughBinSize( cg_size_ );
-        clusterer.setHoughThreshold( cg_thresh_ );
-        clusterer.setUseInterpolation( true );
-        clusterer.setUseDistanceWeight( false );
+        // pcl::Hough3DGrouping<PointType, PointType, RFType, RFType> clusterer;
+        // clusterer.setHoughBinSize( cg_size_ );
+        // clusterer.setHoughThreshold( cg_thresh_ );
+        // clusterer.setUseInterpolation( true );
+        // clusterer.setUseDistanceWeight( false );
 
-        clusterer.setInputCloud( model_keypoints );
-        clusterer.setInputRf( model_rf );
-        clusterer.setSceneCloud( scene_keypoints );
-        clusterer.setSceneRf( scene_rf );
+        // clusterer.setInputCloud( model_keypoints );
+        // clusterer.setInputRf( model_rf );
+        // clusterer.setSceneCloud( scene_keypoints );
+        // clusterer.setSceneRf( scene_rf );
+
+
+        pcl::GeometricConsistencyGrouping<PointType, PointType> clusterer;
+        clusterer.setGCSize (cg_size_);
+        clusterer.setGCThreshold (cg_thresh_);
+
+        clusterer.setInputCloud (model_keypoints);
+        clusterer.setSceneCloud (scene_keypoints);
+        clusterer.setModelSceneCorrespondences (model_scene_corrs);
         clusterer.setModelSceneCorrespondences( model_scene_corrs );
 
         /* clusterer.cluster (correspondences); */
