@@ -10,6 +10,7 @@ object_recognizer::object_recognizer( ros::NodeHandle &nodehandle ) : nh_( nodeh
     model_descriptors( new pcl::PointCloud<DescriptorType> ), scene_descriptors( new pcl::PointCloud<DescriptorType> ),
     rotated_model( new pcl::PointCloud<PointType> ) //,pclKinect_ptr_( new pcl::PointCloud<PointType> )
 {
+    tstart = time(0);
     model_ss_   = 0.01f;
     scene_ss_   = 0.02f;
     rf_rad_     = 0.15f;
@@ -27,7 +28,7 @@ object_recognizer::object_recognizer( ros::NodeHandle &nodehandle ) : nh_( nodeh
     initialize_subscribers();
     initialize_publishers(); 
     use_kinect_scene();   
-    timer = nh_.createTimer(ros::Duration(10.0), &object_recognizer::timerCB, this );
+    timer = nh_.createTimer(ros::Duration(1.0), &object_recognizer::timerCB, this );
 
 }
 
@@ -235,6 +236,9 @@ bool object_recognizer::recognize( std::vector<Eigen::Matrix3f> &rotation, std::
         {
             std::cout << "\nInstance " << i + 1 << ":" << std::endl;
             std::cout << "Correspondences belonging to this instance: " << correspondences[i].size () << std::endl;
+            tend = time(0);
+            std::cout<< "in seconds "<<difftime(tend, tstart)<<std::endl;
+
             /* Print the rotation matrix and translation vector */
             rotation[i] = rototranslations[i].block<3, 3>( 0, 0 );
             translation[i]  = rototranslations[i].block<3, 1>( 0, 3 );
@@ -277,7 +281,9 @@ bool object_recognizer::find_best( Eigen::Matrix3f &rotation, Eigen::Vector3f &t
 {
     std::vector<Eigen::Matrix3f>    temp_rotation;
     std::vector<Eigen::Vector3f>    temp_translation;
-
+    // pointcloud_subscriber_.shutdown();
+    // initialize_subscribers();
+    got_kinect_cloud_=false;
     int     index       = -1;
     double  best_norm   = 0.0;
     double  temp_norm   = 0.0;

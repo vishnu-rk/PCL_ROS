@@ -15,6 +15,8 @@ public:
     bool show_correspondences;
     bool show_keypoints;
 
+    time_t tstart, tend;
+
     object_recognizer(ros::NodeHandle& nodehandle);
 
     geometry_msgs::Quaternion rotation2quat(Eigen::Matrix3f rotation);

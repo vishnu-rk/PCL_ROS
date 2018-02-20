@@ -24,22 +24,30 @@ int main(int argc, char** argv) {
     objectRT_publisher= nh.advertise<geometry_msgs::Pose>( "/objectRT_main", 2, true );
     
     test_model = "bottle.pcd";
-   
+    //label:
     // object.set_model_ss(0.01);
     // object.set_scene_ss(0.05);
     // object.set_cg_size(0.01);
     // object.set_cg_thresh(7.0);
     object.set_model_cloud(find_in_package(test_model));
-
-    if (object.find_best(object_pose)){
-        std::cout<<"found best solution"<<endl;
-        objectRT_publisher.publish(object_pose);
+    while (true){
+        bool valt=object.find_best(object_pose);
+        if (valt){
+            break;            
+        }            
+        else {
+            ros::spinOnce();
+            ros::Duration(1.0).sleep();
+            }
+    
     }
-    else{
-        std::cout<<"did not find soultion"<<std::endl;
-    }
 
+    //if (object.find_best(object_pose)){
+    objectRT_publisher.publish(object_pose);
+    object.pcl_visualize();
+    std::cout<<"found best solution"<<endl;
    // Spin
     ros::spin();
+    //goto label;
 
 }

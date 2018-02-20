@@ -6,6 +6,7 @@
 #include <math.h>
 #include <iostream>
 #include <vector>
+#include <ctime>
 
 #include <Eigen/Eigen> //for the Eigen library
 #include <Eigen/Dense>
