@@ -5,7 +5,7 @@
 #include "vision_msgs/Detection2DArray.h"
 
 
-ros::Publisher pub_display;
+ros::Publisher pub_2d_bounding_box;
 
 void objects_cb (const vision_msgs::Detection2DArray& msg){
 // Create a container for the data.
@@ -18,14 +18,14 @@ void objects_cb (const vision_msgs::Detection2DArray& msg){
       output.data.push_back(msg.detections[0].bbox.center.y);
       output.data.push_back(msg.detections[0].bbox.size_x);
       output.data.push_back(msg.detections[0].bbox.size_y);
-      pub_display.publish (output);
+      pub_2d_bounding_box.publish (output);
    }
    }
   
    else
    {
       output.data.push_back(0.0);
-      pub_display.publish (output);   
+      pub_2d_bounding_box.publish (output);   
    }
    
  }
@@ -40,7 +40,7 @@ void objects_cb (const vision_msgs::Detection2DArray& msg){
    ros::Subscriber sub = nh.subscribe ("/objects", 1, objects_cb);
  
    // Create a ROS publisher for the output point cloud
-   pub_display = nh.advertise<std_msgs::Float32MultiArray> ("/objects/PoseArray", 1);
+   pub_2d_bounding_box = nh.advertise<std_msgs::Float32MultiArray> ("/objects/PoseArray", 1);
  
    // Spin
    ros::spin ();
