@@ -2,8 +2,9 @@
 #include <std_msgs/MultiArrayLayout.h>
 #include <std_msgs/MultiArrayDimension.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <fstream>
 #include "vision_msgs/Detection2DArray.h"
-
+using namespace std;
 
 ros::Publisher pub_2d_bounding_box;
 
@@ -12,13 +13,24 @@ void objects_cb (const vision_msgs::Detection2DArray& msg){
    std_msgs::Float32MultiArray output;
    output.data.clear();
    if (msg.detections.size()!=0){
-      if (msg.detections[0].results[0].id==47){
-      output.data.push_back(msg.detections[0].results[0].id);     
-      output.data.push_back(msg.detections[0].bbox.center.x);
-      output.data.push_back(msg.detections[0].bbox.center.y);
-      output.data.push_back(msg.detections[0].bbox.size_x);
-      output.data.push_back(msg.detections[0].bbox.size_y);
-      pub_2d_bounding_box.publish (output);
+      for(int i=0;i<msg.detections.size();i++){
+         for(int j=0;j<msg.detections[i].results.size();j++){
+         if (msg.detections[i].results[j].id==44){
+            float u=msg.detections[i].bbox.center.x/2.11;
+            float v=msg.detections[i].bbox.center.y/3.75;
+            output.data.push_back(msg.detections[i].results[j].id);     
+            output.data.push_back(u);
+            output.data.push_back(v);
+            output.data.push_back(msg.detections[i].bbox.size_x);
+            output.data.push_back(msg.detections[i].bbox.size_y);
+            ofstream myfile;
+            myfile.open ("example.txt");
+            myfile <<(int)u<<" "<<(int)v<<std::endl;
+            //myfile <<v<<std::endl;
+            myfile.close();
+            pub_2d_bounding_box.publish (output);
+      }
+      }
    }
    }
   

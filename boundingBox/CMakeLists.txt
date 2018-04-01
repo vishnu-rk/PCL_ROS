@@ -8,6 +8,7 @@ project(boundingBox)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  cv_bridge
   geometry_msgs
   roscpp
   sensor_msgs
@@ -15,6 +16,8 @@ find_package(catkin REQUIRED COMPONENTS
   vision_msgs
   pcl_conversions
   pcl_ros
+  message_generation
+  OpenCV
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,12 +53,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+# Generate messages in the 'msg' folder
+add_message_files(
+  FILES
+  point_array.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,11 +73,11 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs#   sensor_msgs#   std_msgs#   vision_msgs
-# )
+# Generate added messages and services with any dependencies listed here
+generate_messages(
+  DEPENDENCIES
+  geometry_msgs   std_msgs#   vision_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,7 +111,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES boundingBox
-#  CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs std_msgs vision_msgs
+   CATKIN_DEPENDS geometry_msgs roscpp sensor_msgs std_msgs vision_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -140,6 +142,7 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/boundingBox_node.cpp)
 add_executable(bounding_box3d_node src/bounding_box3d_node.cpp)
 add_executable(bounding_box3d_node_file src/bounding_box3d_node_file.cpp)
+# add_executable(contour_node src/contour_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -161,7 +164,11 @@ target_link_libraries(bounding_box3d_node
 target_link_libraries(bounding_box3d_node_file
   ${catkin_LIBRARIES}
 )
+# target_link_libraries(contour_node
+#   ${catkin_LIBRARIES}
+# )
 
+# add_dependencies(contour_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 #############
 ## Install ##
 #############

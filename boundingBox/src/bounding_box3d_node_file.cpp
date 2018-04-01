@@ -26,7 +26,7 @@ void objects_cb (const vision_msgs::Detection2DArray& msg){
  int main (int argc, char** argv)
  {
    // Initialize ROS
-   ros::init (argc, argv, "bounding_box3d_node");
+   ros::init (argc, argv, "bounding_box3d_node_file");
    ros::NodeHandle nh;
  
    // Create a ROS subscriber for the input point cloud
