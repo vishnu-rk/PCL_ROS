@@ -21,9 +21,9 @@ void pixelTo3DPoint(const sensor_msgs::PointCloud2& pCloud, const int u, const i
       std::cout<<"Display 4.0"<<std::endl;
       // Convert from u (column / width), v (row/height) to position in array
       // where X,Y,Z data starts
-      int arrayPosition = v*pCloud.row_step + u*pCloud.point_step;
+      int arrayPosition =((int)(v/540.0*424))*pCloud.row_step + ((int)(u/960.0*512))*pCloud.point_step;
 
-      // compute position in array where x,y,z data start
+      // compute position in (array where x,y,z data start
       int arrayPosX = arrayPosition + pCloud.fields[0].offset; // X has an offset of 0
       int arrayPosY = arrayPosition + pCloud.fields[1].offset; // Y has an offset of 4
       int arrayPosZ = arrayPosition + pCloud.fields[2].offset; // Z has an offset of 8
@@ -65,15 +65,15 @@ void cloud_cb (const sensor_msgs::PointCloud2& pCloud){
           std::cout<<x<<std::endl;
           i++;
           if (i==2){
-            //inFile.close();
+            inFile.close();
             break;
         }
       }
       std::cout<<"Display 3.0"<<std::endl;
-      if(arr[0]<424 && arr[1]< 512){
+      //if(arr[0]<424 && arr[1]< 512){
         pixelTo3DPoint(pCloud,arr[0],arr[1],p);
         std::cout<<"Display 4.0"<<std::endl;
-      }
+      //}
       }
       
       pub_3d_bounding_box.publish(p); 
@@ -122,8 +122,8 @@ void cloud_cb (const sensor_msgs::PointCloud2& pCloud){
    ros::NodeHandle nh;
  
    // Create a ROS subscriber for the input point cloud
-   // ros::Subscriber sub = nh.subscribe ("/kinect2/sd/points", 1, cloud_cb);
-   ros::Subscriber sub = nh.subscribe ("/kinect2/sd/image_depth", 1, image_cb);
+   ros::Subscriber sub = nh.subscribe ("/kinect2/sd/points", 1, cloud_cb);
+   // ros::Subscriber sub = nh.subscribe ("/kinect2/sd/image_depth", 1, image_cb);
  
    // Create a ROS publisher for the output point cloud
    pub_3d_bounding_box = nh.advertise<geometry_msgs::Point> ("/objects/3d", 1);

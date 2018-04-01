@@ -16,16 +16,18 @@ void objects_cb (const vision_msgs::Detection2DArray& msg){
       for(int i=0;i<msg.detections.size();i++){
          for(int j=0;j<msg.detections[i].results.size();j++){
          if (msg.detections[i].results[j].id==44){
-            float u=msg.detections[i].bbox.center.x/2.11;
-            float v=msg.detections[i].bbox.center.y/3.75;
+            float u=msg.detections[i].bbox.center.x/540*960.0;//2.11;
+            float v=msg.detections[i].bbox.center.y/960*540.0;///3.75;
+            float s1=msg.detections[i].bbox.size_x;
+            float s2=msg.detections[i].bbox.size_y;
             output.data.push_back(msg.detections[i].results[j].id);     
             output.data.push_back(u);
             output.data.push_back(v);
-            output.data.push_back(msg.detections[i].bbox.size_x);
-            output.data.push_back(msg.detections[i].bbox.size_y);
+            output.data.push_back(s1);
+            output.data.push_back(s2);
             ofstream myfile;
             myfile.open ("example.txt");
-            myfile <<(int)u<<" "<<(int)v<<std::endl;
+            myfile <<(int)u<<" "<<(int)v<<" "<<(int)s1<<" "<<(int)s2<<std::endl;
             //myfile <<v<<std::endl;
             myfile.close();
             pub_2d_bounding_box.publish (output);

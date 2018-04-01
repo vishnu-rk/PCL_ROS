@@ -9,6 +9,7 @@ project(boundingBox)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
+  image_transport
   geometry_msgs
   roscpp
   sensor_msgs
@@ -142,6 +143,8 @@ include_directories(
 add_executable(${PROJECT_NAME}_node src/boundingBox_node.cpp)
 add_executable(bounding_box3d_node src/bounding_box3d_node.cpp)
 add_executable(bounding_box3d_node_file src/bounding_box3d_node_file.cpp)
+add_executable(image_crop src/image_crop.cpp)
+add_executable(image_crop_read src/image_crop_read.cpp)
 # add_executable(contour_node src/contour_node.cpp)
 
 ## Rename C++ executable without prefix
@@ -162,6 +165,12 @@ target_link_libraries(bounding_box3d_node
   ${catkin_LIBRARIES}
 )
 target_link_libraries(bounding_box3d_node_file
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(image_crop
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(image_crop_read
   ${catkin_LIBRARIES}
 )
 # target_link_libraries(contour_node
